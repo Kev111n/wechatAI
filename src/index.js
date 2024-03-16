@@ -14,6 +14,24 @@ let prompt = {
   ]
 }
 
+const bot = WechatyBuilder.build({
+  name: 'bot',
+  /**
+   * How to set Wechaty Puppet Provider:
+   *
+   *  1. Specify a `puppet` option when instantiating Wechaty. (like `{ puppet: 'wechaty-puppet-padlocal' }`, see below)
+   *  1. Set the `WECHATY_PUPPET` environment variable to the puppet NPM module name. (like `wechaty-puppet-padlocal`)
+   *
+   * You can use the following providers:
+   *  - wechaty-puppet-wechat (no token required)
+   *  - wechaty-puppet-padlocal (token required)
+   *  - wechaty-puppet-service (token required, see: <https://wechaty.js.org/docs/puppet-services>)
+   *  - etc. see: <https://github.com/wechaty/wechaty-puppet/wiki/Directory>
+   */
+  // puppet: 'wechaty-puppet-wechat',
+})
+const Friendship = bot.Friendship
+
 function onScan(qrcode, status) {
   if (status === ScanStatus.Waiting || status === ScanStatus.Timeout) {
     qrcodeTerminal.generate(qrcode, { small: true })  // show qrcode on console
@@ -59,46 +77,21 @@ async function onMessage(message) {
   })
 }
 
-const bot = WechatyBuilder.build({
-  name: 'bot',
-  /**
-   * How to set Wechaty Puppet Provider:
-   *
-   *  1. Specify a `puppet` option when instantiating Wechaty. (like `{ puppet: 'wechaty-puppet-padlocal' }`, see below)
-   *  1. Set the `WECHATY_PUPPET` environment variable to the puppet NPM module name. (like `wechaty-puppet-padlocal`)
-   *
-   * You can use the following providers:
-   *  - wechaty-puppet-wechat (no token required)
-   *  - wechaty-puppet-padlocal (token required)
-   *  - wechaty-puppet-service (token required, see: <https://wechaty.js.org/docs/puppet-services>)
-   *  - etc. see: <https://github.com/wechaty/wechaty-puppet/wiki/Directory>
-   */
-  // puppet: 'wechaty-puppet-wechat',
-})
-
 bot.on('scan', onScan)
 bot.on('login', onLogin)
 bot.on('logout', onLogout)
 bot.on('message', onMessage)
-bot.on('friendship', async friendship => {
-  try {
-    console.log(`received friend event.`)
-    switch (friendship.type()) {
-
-      // 1. New Friend Request
-
-      case bot.Friendship.Type.Receive:
-        await friendship.accept()
-        break
-
-      // 2. Friend Ship Confirmed
-
-      case bot.Friendship.Type.Confirm:
-        console.log(`friend ship confirmed`)
-        break
+bot.on('friendship', async (friendship) => {
+  if (friendship.type() === Friendship.Type.Receive) { // 1. receive new friendship request from new contact
+    const contact = friendship.contact()
+    let result = await friendship.accept()
+    if (result) {
+      console.log(`Request from ${contact.name()} is accept successfully!`)
+    } else {
+      console.log(`Request from ${contact.name()} failed to accept!`)
     }
-  } catch (e) {
-    console.error(e)
+  } else if (friendship.type() === Friendship.Type.Confirm) { // 2. confirm friendship
+    console.log(`new friendship confirmed with ${contact.name()}`)
   }
 })
 
