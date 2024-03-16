@@ -40,7 +40,7 @@ function onLogout(user) {
 
 async function onMessage(message) {
   const talker = message.talker(); 
-  log.info(`${talker.name()} : ${message.text()}`)
+  
   
   if(!talker.payload.friend || message.payload.roomId || talker.payload.type != 1) {   
     return;
@@ -50,6 +50,8 @@ async function onMessage(message) {
     await talker.say("我只能处理文字消息,请发送文字内容");
     return;
   }
+
+  log.info(`${talker.name()} : ${message.text()}`)
 
   const response = await sendQuestion(message.text(), prompt)
   await talker.say(response)
