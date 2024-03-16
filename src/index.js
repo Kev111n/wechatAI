@@ -14,6 +14,8 @@ let prompt = {
   ]
 }
 
+
+let Friendship = null
 const bot = WechatyBuilder.build({
   name: 'bot',
   /**
@@ -30,7 +32,6 @@ const bot = WechatyBuilder.build({
    */
   // puppet: 'wechaty-puppet-wechat',
 })
-const Friendship = bot.Friendship
 
 function onScan(qrcode, status) {
   if (status === ScanStatus.Waiting || status === ScanStatus.Timeout) {
@@ -96,5 +97,9 @@ bot.on('friendship', async (friendship) => {
 })
 
 bot.start()
-  .then(() => log.info('StarterBot', 'Starter Bot Started.'))
+  .then(() => {
+    Friendship = bot.Friendship
+    log.info('StarterBot', 'Starter Bot Started.')
+  })
   .catch(e => log.error('StarterBot', e))
+
