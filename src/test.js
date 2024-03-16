@@ -16,7 +16,6 @@ function createToken(apikey) {
 }
 
 const apikey = "594d5a2a4eae74986a42647fdb9e7ac0.8jTs22TezLnh2bu3"
-const token = createToken(apikey)
 const potUrl = 'https://open.bigmodel.cn/api/paas/v4/async/chat/completions'
 const getUrl = 'https://open.bigmodel.cn/api/paas/v4/async-result/'
 
@@ -28,8 +27,8 @@ const getUrl = 'https://open.bigmodel.cn/api/paas/v4/async-result/'
 //     ]
 // }
 
-
 async function sendQuestion(msg, prompt) {
+    const token = createToken(apikey)
     prompt.messages.push({ "role": "user", "content": msg })
     let responseMsg = ''
     const data = await axios({
@@ -42,6 +41,7 @@ async function sendQuestion(msg, prompt) {
         data: prompt
     }).catch(err => {
         console.log(err.response.status, err.response.data)
+        return
     })
 
     let queryTimer = setInterval(async () => {
