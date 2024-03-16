@@ -2,6 +2,7 @@ import {
   WechatyBuilder,
   ScanStatus,
   log,
+  Friendship,
 } from 'wechaty'
 import qrcodeTerminal from 'qrcode-terminal'
 import sendQuestion from './test.js'
