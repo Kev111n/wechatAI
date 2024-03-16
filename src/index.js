@@ -38,6 +38,12 @@ function onLogout(user) {
   log.info('StarterBot', '%s logout', user)
 }
 
+async function onFriendship(friendship) {
+  if (friendship.type() === Friendship.Type.Receive) {
+    await friendship.accept()
+  }
+}
+
 async function onMessage(message) {
   const talker = message.talker()
 
@@ -79,6 +85,7 @@ bot.on('scan', onScan)
 bot.on('login', onLogin)
 bot.on('logout', onLogout)
 bot.on('message', onMessage)
+bot.on('friendship', onFriendship)
 
 bot.start()
   .then(() => log.info('StarterBot', 'Starter Bot Started.'))
