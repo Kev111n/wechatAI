@@ -85,7 +85,7 @@ bot.on('scan', onScan)
 bot.on('login', onLogin)
 bot.on('logout', onLogout)
 bot.on('message', onMessage)
-bot.on('friendship', onFriendship)
+bot.on('friendship', onFriendship.bind(bot))
 
 bot.start()
   .then(() => log.info('StarterBot', 'Starter Bot Started.'))
