@@ -54,7 +54,6 @@ async function onMessage(message) {
 
   await sendQuestion(message.text(), prompt).then(async res => {
     await talker.say(res)
-    log.info(`已向${talker.name()}回复消息: ${response}`)
   })
 }
 
