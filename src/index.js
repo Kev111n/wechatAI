@@ -54,6 +54,7 @@ async function onMessage(message) {
 
   await sendQuestion(message.text(), prompt).then(async res => {
     await talker.say(res)
+    log.info(`Bot-01 : ${res}`)
   })
 }
 

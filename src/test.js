@@ -69,7 +69,7 @@ async function sendQuestion(msg, prompt) {
                 prompt.messages.push({ "role": "assistant", "content": responseMsg })
                 resolve(responseMsg)
             }
-        }, 5000)
+        }, 1000)
     })
 }
 
