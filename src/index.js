@@ -38,11 +38,6 @@ function onLogout(user) {
   log.info('StarterBot', '%s logout', user)
 }
 
-async function onFriendship(friendship) {
-  if (friendship.type() === this.Friendship.Type.Receive) {
-    await friendship.accept()
-  }
-}
 
 async function onMessage(message) {
   const talker = message.talker()
@@ -85,7 +80,27 @@ bot.on('scan', onScan)
 bot.on('login', onLogin)
 bot.on('logout', onLogout)
 bot.on('message', onMessage)
-bot.on('friendship', onFriendship.bind(bot))
+bot.on('friendship', async friendship => {
+  try {
+    console.log(`received friend event.`)
+    switch (friendship.type()) {
+
+      // 1. New Friend Request
+
+      case bot.Friendship.Type.Receive:
+        await friendship.accept()
+        break
+
+      // 2. Friend Ship Confirmed
+
+      case bot.Friendship.Type.Confirm:
+        console.log(`friend ship confirmed`)
+        break
+    }
+  } catch (e) {
+    console.error(e)
+  }
+})
 
 bot.start()
   .then(() => log.info('StarterBot', 'Starter Bot Started.'))
