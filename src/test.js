@@ -72,9 +72,5 @@ async function sendQuestion(msg, prompt) {
         }, 5000)
     })
 }
-sendQuestion('作为一名营销专家，请为我的产品创作一个吸引人的slogan', { model: "glm-4", messages: [] }).then(res => {
-    console.log(res)
-})
-
 
 export default sendQuestion
