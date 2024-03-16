@@ -39,23 +39,23 @@ function onLogout(user) {
 }
 
 async function onMessage(message) {
-  const talker = message.talker(); 
-  
-  
-  if(!talker.payload.friend || message.payload.roomId || talker.payload.type != 1) {   
-    return;
+  const talker = message.talker()
+
+  if (!talker.payload.friend || message.payload.roomId || talker.payload.type != 1) {
+    return
   }
 
-  if(message.payload.type != 7) {   
-    await talker.say("我只能处理文字消息,请发送文字内容");
-    return;
+  if (message.payload.type != 7) {
+    await talker.say("我只能处理文字消息,请发送文字内容")
+    return
   }
 
   log.info(`${talker.name()} : ${message.text()}`)
 
-  const response = await sendQuestion(message.text(), prompt)
-  await talker.say(response)
-  log.info(`已向${talker.name()}回复消息: ${response}`)
+  await sendQuestion(message.text(), prompt).then(async res => {
+    await talker.say(response)
+    log.info(`已向${talker.name()}回复消息: ${response}`)
+  })
 }
 
 const bot = WechatyBuilder.build({

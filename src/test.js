@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import axios from 'axios'
+import { log } from 'wechaty'
 
 function createToken(apikey) {
     const [id, secret] = apikey.split('.')
@@ -28,42 +29,52 @@ const getUrl = 'https://open.bigmodel.cn/api/paas/v4/async-result/'
 // }
 
 async function sendQuestion(msg, prompt) {
-    const token = createToken(apikey)
-    prompt.messages.push({ "role": "user", "content": msg })
-    let responseMsg = ''
-    const data = await axios({
-        method: 'post',
-        url: potUrl,
-        headers: {
-            'Authorization': token,
-            'Content-Type': 'application/json'
-        },
-        data: prompt
-    }).catch(err => {
-        console.log(err.response.status, err.response.data)
-        return
-    })
-
-    let queryTimer = setInterval(async () => {
-        const response = await axios({
-            method: 'get',
-            url: getUrl + data.data.id,
+    return new Promise(async resolve => {
+        const token = createToken(apikey)
+        prompt.messages.push({ "role": "user", "content": msg })
+        let responseMsg = ''
+        let flag = true
+        const data = await axios({
+            method: 'post',
+            url: potUrl,
             headers: {
                 'Authorization': token,
                 'Content-Type': 'application/json'
-            }
+            },
+            data: prompt
         }).catch(err => {
             console.log(err.response.status, err.response.data)
+            flag = false
         })
 
-        if (response.data.task_status === 'SUCCESS') {
-            clearInterval(queryTimer)
-            responseMsg = response.data.choices[0].message.content
-            prompt.messages.push({ "role": "assistant", "content": responseMsg })
+        if (!flag) {
+            return '请求失败'
         }
-    }, 5000)
 
-    return responseMsg
+        let queryTimer = setInterval(async () => {
+            const response = await axios({
+                method: 'get',
+                url: getUrl + data.data.id,
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                }
+            }).catch(err => {
+                console.log(err.response.status, err.response.data)
+            })
+
+            if (response.data.task_status === 'SUCCESS') {
+                clearInterval(queryTimer)
+                responseMsg = response.data.choices[0].message.content
+                prompt.messages.push({ "role": "assistant", "content": responseMsg })
+                resolve(responseMsg)
+            }
+        }, 5000)
+    })
 }
+sendQuestion('作为一名营销专家，请为我的产品创作一个吸引人的slogan', { model: "glm-4", messages: [] }).then(res => {
+    console.log(res)
+})
+
 
 export default sendQuestion
