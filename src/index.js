@@ -1,8 +1,7 @@
 import {
   WechatyBuilder,
   ScanStatus,
-  log,
-  FriendshipInterface
+  log
 } from 'wechaty'
 import qrcodeTerminal from 'qrcode-terminal'
 import sendQuestion from './test.js'
@@ -40,7 +39,7 @@ function onLogout(user) {
 }
 
 async function onFriendship(friendship) {
-  if (friendship.type() === FriendshipInterface.Type.Receive) {
+  if (friendship.type() === this.Friendship.Type.Receive) {
     await friendship.accept()
   }
 }
